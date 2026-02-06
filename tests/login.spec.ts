@@ -4,7 +4,7 @@ import { LoginPage } from '../pages/login.page';
 const USERNAME = process.env.E2E_USERNAME ?? 'standard_user';
 const PASSWORD = process.env.E2E_PASSWORD ?? 'secret_sauce';
 
-test.describe('Funcionalidade de Login', () => {
+test.describe('Login Feature', () => {
   let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
@@ -12,7 +12,7 @@ test.describe('Funcionalidade de Login', () => {
     await loginPage.goto();
   });
 
-  test('Deve realizar login com sucesso', async ({ page }) => {
+  test('Should log in successfully', async ({ page }) => {
     await loginPage.login(USERNAME, PASSWORD);
     await expect(page).toHaveURL(/.*inventory.html/);
     const title = page.locator('[data-test="title"]');
