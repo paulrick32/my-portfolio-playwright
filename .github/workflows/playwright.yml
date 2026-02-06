@@ -4,6 +4,10 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 jobs:
   test:
     timeout-minutes: 60
@@ -20,8 +24,24 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
+      if: always()
       with:
-        name: playwright-report
+        name: playwright-report-zip
         path: playwright-report/
         retention-days: 30
+    - uses: actions/upload-pages-artifact@v3
+      if: always()
+      with:
+        path: playwright-report/
+  deploy-report:
+    needs: test
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
